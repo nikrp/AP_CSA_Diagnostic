@@ -1,0 +1,7 @@
+subjects,file,correct,total
+Basic Programming Concepts,Data/basic.csv,9.0,
+Classes and Objects,Data/oop.csv,10.0,
+Inheritance,Data/inherit.csv,,
+Data Structures,Data/ds.csv,,
+Recursion,Data/recursion.csv,,
+Sorting and Searching,Data/ss.csv,,
