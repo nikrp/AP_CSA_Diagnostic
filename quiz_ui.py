@@ -1,7 +1,6 @@
 ########### IMPORTS ###########
 from tkinter import *
 from pandas import *
-import random
 import tkinter.font as tkFont
 import matplotlib.pyplot as plt
 from smtplib import SMTP
@@ -25,10 +24,11 @@ class ComputerScienceA():
         self.total_questions = 10
         self.current_index = 0
 
-    
+    # Start Screen
     def start_screen(self):
         """The starting screen for the diagnostic. This screen shows a dropdown where you can select your subject."""
         
+        # Destroy all Widgets on Screen
         for widget in self.window.winfo_children():
             widget.destroy()
         
@@ -56,7 +56,8 @@ class ComputerScienceA():
         self.menu = self.window.nametowidget(self.dropdown.menuname)
         self.menu.config(font=self.menu_font)
         self.dropdown.grid(column=1, row=3)
-            
+    
+    # Select Which Subject They Picked
     def select_subject(self, event):
         """Save which option the user picked into a variable and start the showQuestion() method."""
         
@@ -66,15 +67,21 @@ class ComputerScienceA():
         # Match self.clicked (the selected subject) with a File Name from subjects.csv - .index()
         self.file_name = self.file_names[self.subjects.index(self.clicked.get())]
         
+        # Get the Current Index of the Chosen Subject
         self.current_index = self.subjects.index(self.clicked.get())
         
         # Show the Questions
         self.show_question()
-        
+    
+    # Start Showing Questions
     def show_question(self):
+        """This method starts showing questions for the user to answer."""
+        
+        # Destroy all Widgets on Screen
         for widget in self.window.winfo_children():
             widget.destroy()
         
+        # Get the Questions and Answers and the Correct Answer
         self.file_df = read_csv(self.file_name)
         self.questions = self.file_df["questions"][self.ques_num_index]
         self.op1 = self.file_df["op1"][self.ques_num_index]
@@ -83,8 +90,10 @@ class ComputerScienceA():
         self.op4 = self.file_df["op4"][self.ques_num_index]
         self.ans = self.file_df["answer"][self.ques_num_index]
         
+        # Radio Buttons StringVar()
         self.v = StringVar(self.window, "0")
         
+        # Radio Button Values
         self.values = {
             self.op1:"1",
             self.op2:"2",
@@ -92,29 +101,36 @@ class ComputerScienceA():
             self.op4:"4",
         }
         
+        # Radio Button Variables
         r_btns = []
         btn_row = 2
         
-        
+        # Show the Question with the Number
         self.question_lbl = Label(self.window, text=f"{self.question_num}. {self.questions}", justify="center", font=(self.font, 18, "bold"))
         self.question_lbl.grid(column=0, row=0, padx=150)
         
+        # Create the Radio Button Objects
         for (text, value) in self.values.items():
             r_btns.append(Radiobutton(self.window, text=text, variable=self.v, value=value, justify="left", font=(self.font, 15, "bold")))
         
+        # Grid the Radio Buttons
         for btn in r_btns:
             btn.grid(column=0, row=btn_row, padx=30, pady=20, sticky="W")
             btn_row += 1
         
+        # Submit Answer Button
         self.submit_ans = Button(self.window, text="Submit", font=(self.font, 15, "bold"), command=self.check_answer)
         self.submit_ans.grid(column=0, row=6)
         
+    # Check the Answer    
     def check_answer(self):
         """Check the answer and see if the user has finished all the questions or needs to move to the next one."""
         
+        # Destroy all Widgets on Screen
         for widget in self.window.winfo_children():
             widget.destroy()
         
+        # Get the Users Chosen Answer
         self.chosen_ans = ""
         
         # Save the Chosen Answer into a Variable - (key, value)
@@ -131,8 +147,10 @@ class ComputerScienceA():
             Label(self.window, text="❌ Sorry, that was incorrect.", font=(self.font, 24, "bold")).grid(column=0, row=0, padx=200)
             Label(self.window, text=f"The correct answer was: {self.ans}\nYou selected: {self.chosen_ans}", font=(self.font, 15, "bold")).grid(column=0, row=2, pady=10, padx=50)
         
+        # Add to the Question Number
         self.question_num += 1
-        # "Next Question Button for the User"
+        
+        # Next Question Button for the User
         self.next_btn = Button(self.window, text="Next Question", font=(self.font, 18, "bold"), command=self.show_question)
         self.end_test = Button(self.window, text="End Test", font=(self.font, 18, "bold"), command=self.show_results)
         
@@ -144,14 +162,19 @@ class ComputerScienceA():
             self.next_btn.grid(column=0, row=3, pady=30)
     
     def show_results(self):
+        """Show how the user did on their test and give some extra options."""
+        
+        # Destroy all Widgets on Screen
         for widget in self.window.winfo_children():
             widget.destroy()
         
+        # Save the amt of Correct and Total Answers
         self.subjects_csv = read_csv("subjects.csv")
         self.subjects_csv.loc[self.current_index, "correct"] = int(self.correct_answers)
         self.subjects_csv.loc[self.current_index, "total"] = int(self.question_num - 1)
         self.subjects_csv.to_csv("subjects.csv", index=False)
         
+        # Show the Total Score of the User
         self.correct_total = Label(self.window, text=f"{self.correct_answers}/{self.question_num - 1} Questions Answered Correctly", font=(self.font, 24, "bold"))
         self.correct_total.grid(column=0, row=0, padx=250, columnspan=2)
         
@@ -172,9 +195,6 @@ class ComputerScienceA():
         # Create the Axis Labels
         plt.xlabel("Subjects")
         plt.ylabel("Results")
-        
-        #plt.xticks(range(len(self.subjects)), self.subjects, rotation='vertical')
-
         
         # Save the Graph
         plt.savefig("BarPlot.png")
@@ -206,30 +226,40 @@ class ComputerScienceA():
         self.clear.grid(column=0, row=6, columnspan=2, pady=50)
     
     def show_graph_command(self):
+        """Show the graph after a button is clicked."""
         plt.show()
     
     def send(self):
+        """Send the email to the user's entered email address."""
+        
+        # Save the Reciever's Email Address
         self.sender = "nikpellakuru@gmail.com"
         self.reciever = self.email_input.get()
         
+        # Read the Image
         with open("BarPlot.png", 'rb') as f:
             self.img_data = f.read()
         
+        # Set the Labels in the Msg
         self.msg = MIMEMultipart()
         self.msg["Subject"] = "AP CSA Diagnostic Results"
         self.msg["From"] = self.sender
         self.msg["To"] = self.reciever
         
+        # Attach the Text and Image to the Msg
         self.text = MIMEText("test")
         self.msg.attach(self.text)
         self.image = MIMEImage(self.img_data, name = os.path.basename("BarPlot.png"))
         self.msg.attach(self.image)
         
+        # Login to the Host Server
         s = SMTP("smtp.gmail.com", port=587)
         s.ehlo()
         s.starttls()
         s.ehlo()
         s.login(user=self.sender, password="bopprtmermbmqjwr")
+        
+        # Try Sending the Email
         try:
             s.sendmail(self.sender, self.reciever, self.msg.as_string())
         except:
@@ -240,8 +270,15 @@ class ComputerScienceA():
             s.quit()
         
     def clear_graph(self):
+        """Clear the Graph's History"""
+        
+        # Change all Scores and Totals Back to 0
         self.subjects_csv["correct"] = 0
         self.subjects_csv["total"] = 0
         self.subjects_csv.to_csv("subjects.csv", index=False)
+        
+        # Show Completion
         messagebox.showinfo("Graph History", "Your Graph History is cleared. Next time you take a diagnostic, it's a fresh start.")
+        
+        # Loop Back
         self.start_screen()
