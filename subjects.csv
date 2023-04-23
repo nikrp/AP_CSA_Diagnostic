@@ -1,7 +1,7 @@
 subjects,file,correct,total
-Basic,Data/basic.csv,1,0
-Classes,Data/oop.csv,5,0
-Inheritance,Data/inherit.csv,3,0
+Basic,Data/basic.csv,0,0
+Classes,Data/oop.csv,0,0
+Inheritance,Data/inherit.csv,0,0
 Data Structures,Data/ds.csv,0,0
 Recursion,Data/recursion.csv,0,0
 Sorting,Data/ss.csv,0,0

@@ -20,7 +20,6 @@ class ComputerScienceA():
         self.window = window
         self.font = "Comic Sans MS"
         self.correct_answers = 0
-        self.question_num = 1
         self.ques_num_index = 0
         self.correct_answers_dict = {}
         self.total_questions = 2
@@ -29,6 +28,12 @@ class ComputerScienceA():
     
     def start_screen(self):
         """The starting screen for the diagnostic. This screen shows a dropdown where you can select your subject."""
+        
+        for widget in self.window.winfo_children():
+            widget.destroy()
+        
+        # Question Num Reset
+        self.question_num = 1
         
         # Welcome - Label()
         self.welcome_title = Label(self.window, text="WELCOME!", font=(self.font, 24, "bold"), justify="center")
@@ -64,9 +69,9 @@ class ComputerScienceA():
         self.current_index = self.subjects.index(self.clicked.get())
         
         # Show the Questions
-        self.showQuestion()
+        self.show_question()
         
-    def showQuestion(self):
+    def show_question(self):
         for widget in self.window.winfo_children():
             widget.destroy()
         
@@ -128,7 +133,7 @@ class ComputerScienceA():
         
         self.question_num += 1
         # "Next Question Button for the User"
-        self.next_btn = Button(self.window, text="Next Question", font=(self.font, 18, "bold"), command=self.showQuestion)
+        self.next_btn = Button(self.window, text="Next Question", font=(self.font, 18, "bold"), command=self.show_question)
         self.end_test = Button(self.window, text="End Test", font=(self.font, 18, "bold"), command=self.show_results)
         
         # Decide Which Button to Grid
@@ -144,6 +149,7 @@ class ComputerScienceA():
         
         self.subjects_csv = read_csv("subjects.csv")
         self.subjects_csv.loc[self.current_index, "correct"] = int(self.correct_answers)
+        self.subjects_csv.loc[self.current_index, "total"] = int(self.question_num - 1)
         self.subjects_csv.to_csv("subjects.csv", index=False)
         
         self.correct_total = Label(self.window, text=f"{self.correct_answers}/{self.question_num - 1} Questions Answered Correctly", font=(self.font, 24, "bold"))
@@ -151,13 +157,10 @@ class ComputerScienceA():
         
         # Create the Bar Graph
         plt.figure(figsize=[11, 4])
-        
-        # Get the Total Questions for Each Subject
-        self.total_qs = [self.total_questions for i in self.subjects]
-            
+                    
         # Graph the Colored Bars to their Respective Area
         for i in range(len(self.subjects)):
-            plt.bar(self.subjects[i], self.total_qs[i] - self.subjects_csv["correct"][i], bottom=self.subjects_csv["correct"][i], color="red")
+            plt.bar(self.subjects[i], self.subjects_csv["total"][i] - self.subjects_csv["correct"][i], bottom=self.subjects_csv["correct"][i], color="red")
             plt.bar(self.subjects[i], self.subjects_csv["correct"][i], color="green")
         
         # Place the Legend onto the Screen
@@ -193,6 +196,14 @@ class ComputerScienceA():
         # Create the Send Button
         self.send_btn = Button(self.window, text="Send", font=(self.font, 15, "bold"), command=self.send)
         self.send_btn.grid(column=1, row=5)
+        
+        # Create Another Test Button
+        self.another_test = Button(self.window, text="Take Another Test", font=(self.font, 15, "bold"), command=self.start_screen)
+        self.another_test.grid(column=0, row=5)
+        
+        # Create Clear Graph Button
+        self.clear = Button(self.window, text="Clear History", font=(self.font, 15, "bold"), command=self.clear_graph)
+        self.clear.grid(column=0, row=6, columnspan=2, pady=50)
     
     def show_graph_command(self):
         plt.show()
@@ -228,4 +239,9 @@ class ComputerScienceA():
         finally:
             s.quit()
         
-        
+    def clear_graph(self):
+        self.subjects_csv["correct"] = 0
+        self.subjects_csv["total"] = 0
+        self.subjects_csv.to_csv("subjects.csv", index=False)
+        messagebox.showinfo("Graph History", "Your Graph History is cleared. Next time you take a diagnostic, it's a fresh start.")
+        self.start_screen()
