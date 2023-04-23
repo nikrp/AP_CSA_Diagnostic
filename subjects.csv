@@ -1,5 +1,5 @@
 subjects,file,correct,total
-Basic Programming Concepts,Data/basic.csv,9.0,
+Basic Programming Concepts,Data/basic.csv,4.0,
 Classes and Objects,Data/oop.csv,10.0,
 Inheritance,Data/inherit.csv,,
 Data Structures,Data/ds.csv,,
