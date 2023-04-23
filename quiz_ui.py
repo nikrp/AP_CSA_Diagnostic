@@ -23,7 +23,7 @@ class ComputerScienceA():
         self.question_num = 1
         self.ques_num_index = 0
         self.correct_answers_dict = {}
-        self.total_questions = 5
+        self.total_questions = 2
         self.current_index = 0
 
     
@@ -157,8 +157,8 @@ class ComputerScienceA():
             
         # Graph the Colored Bars to their Respective Area
         for i in range(len(self.subjects)):
-            plt.bar(self.subjects[self.current_index], self.total_qs[i] - list(self.subjects_csv["correct"])[self.current_index], bottom=list(self.subjects_csv["correct"])[self.current_index], color="red")
-            plt.bar(self.subjects[self.current_index], list(self.subjects_csv["correct"])[self.current_index], color="green")
+            plt.bar(self.subjects[i], self.total_qs[i] - self.subjects_csv["correct"][i], bottom=self.subjects_csv["correct"][i], color="red")
+            plt.bar(self.subjects[i], self.subjects_csv["correct"][i], color="green")
         
         # Place the Legend onto the Screen
         plt.legend(labels=["Wrong Answers", "Correct Answers"])
@@ -169,6 +169,9 @@ class ComputerScienceA():
         # Create the Axis Labels
         plt.xlabel("Subjects")
         plt.ylabel("Results")
+        
+        #plt.xticks(range(len(self.subjects)), self.subjects, rotation='vertical')
+
         
         # Save the Graph
         plt.savefig("BarPlot.png")
