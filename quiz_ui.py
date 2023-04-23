@@ -22,7 +22,7 @@ class ComputerScienceA():
         self.correct_answers = 0
         self.ques_num_index = 0
         self.correct_answers_dict = {}
-        self.total_questions = 2
+        self.total_questions = 10
         self.current_index = 0
 
     
