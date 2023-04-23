@@ -4,7 +4,12 @@ from pandas import *
 import random
 import tkinter.font as tkFont
 import matplotlib.pyplot as plt
-from PIL import ImageTk
+from smtplib import SMTP
+import os
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from tkinter import messagebox
 
 ########### QUIZ CLASS ###########
 class ComputerScienceA():
@@ -18,7 +23,7 @@ class ComputerScienceA():
         self.question_num = 1
         self.ques_num_index = 0
         self.correct_answers_dict = {}
-        self.total_questions = 10
+        self.total_questions = 5
         self.current_index = 0
 
     
@@ -56,7 +61,6 @@ class ComputerScienceA():
         # Match self.clicked (the selected subject) with a File Name from subjects.csv - .index()
         self.file_name = self.file_names[self.subjects.index(self.clicked.get())]
         
-        self.completed_subjects.append(self.subjects.index(self.clicked.get()))
         self.current_index = self.subjects.index(self.clicked.get())
         
         # Show the Questions
@@ -143,7 +147,7 @@ class ComputerScienceA():
         self.subjects_csv.to_csv("subjects.csv", index=False)
         
         self.correct_total = Label(self.window, text=f"{self.correct_answers}/{self.question_num - 1} Questions Answered Correctly", font=(self.font, 24, "bold"))
-        self.correct_total.grid(column=0, row=0, padx=250)
+        self.correct_total.grid(column=0, row=0, padx=250, columnspan=2)
         
         # Create the Bar Graph
         plt.figure(figsize=[11, 4])
@@ -166,5 +170,59 @@ class ComputerScienceA():
         plt.xlabel("Subjects")
         plt.ylabel("Results")
         
-        # Save the Graph as a PNG Image
+        # Save the Graph
         plt.savefig("BarPlot.png")
+        
+        # Create the Show Graph Button
+        self.show_graph = Button(self.window, text="Show Graph", font=(self.font, 15, "bold"), command=self.show_graph_command)
+        
+        # Graph the Button
+        self.show_graph.grid(column=0, row=3)
+        
+        # Entry Object to send User their Results
+        self.email_input = Entry(self.window, width=20, font=("self.font", 15))
+        self.email_input.grid(column=1, row=1)
+        
+        # Entry Decription Label
+        self.email_description = Label(self.window, text="Please enter your email and press send to be sent your results.\nOr press exit or another test to leave this screen: ", font=(self.font, 15, "bold"))
+        self.email_description.grid(column=0, row=1, rowspan=2)
+        
+        # Create the Send Button
+        self.send_btn = Button(self.window, text="Send", font=(self.font, 15, "bold"), command=self.send)
+        self.send_btn.grid(column=1, row=5)
+    
+    def show_graph_command(self):
+        plt.show()
+    
+    def send(self):
+        self.sender = "nikpellakuru@gmail.com"
+        self.reciever = self.email_input.get()
+        
+        with open("BarPlot.png", 'rb') as f:
+            self.img_data = f.read()
+        
+        self.msg = MIMEMultipart()
+        self.msg["Subject"] = "AP CSA Diagnostic Results"
+        self.msg["From"] = self.sender
+        self.msg["To"] = self.reciever
+        
+        self.text = MIMEText("test")
+        self.msg.attach(self.text)
+        self.image = MIMEImage(self.img_data, name = os.path.basename("BarPlot.png"))
+        self.msg.attach(self.image)
+        
+        s = SMTP("smtp.gmail.com", port=587)
+        s.ehlo()
+        s.starttls()
+        s.ehlo()
+        s.login(user=self.sender, password="bopprtmermbmqjwr")
+        try:
+            s.sendmail(self.sender, self.reciever, self.msg.as_string())
+        except:
+            messagebox.showerror("Error Sending Email", "There was an error trying to send an email, sorry.")
+        else:
+            messagebox.showinfo("Completed", "The plot was sent to your email. Please check it and your results will appear shortly.")
+        finally:
+            s.quit()
+        
+        
