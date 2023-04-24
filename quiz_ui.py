@@ -233,7 +233,7 @@ class ComputerScienceA():
         """Send the email to the user's entered email address."""
         
         # Save the Reciever's Email Address
-        self.sender = "nikpellakuru@gmail.com"
+        self.sender = "syrupisgreatagain@gmail.com"
         self.reciever = self.email_input.get()
         
         # Read the Image
@@ -257,7 +257,7 @@ class ComputerScienceA():
         s.ehlo()
         s.starttls()
         s.ehlo()
-        s.login(user=self.sender, password="bopprtmermbmqjwr")
+        s.login(user=self.sender, password="zsrawagbeinwcupf")
         
         # Try Sending the Email
         try:
